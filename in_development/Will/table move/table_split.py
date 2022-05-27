@@ -102,9 +102,9 @@ def move_polygons():
         controller.session.commit()
 
 def move_manual_cells():
-    include = ['starter','premotor','trigeminal premotor','Premotor V','V premotor','Premotor','Starter','Mcherry','Trigeminal premotor','Starter cell','Mcherry only']
+    include = ['starter','premotor','trigeminal premotor','Premotor V','V premotor','Premotor','Starter','Mcherry','Trigeminal premotor','Starter cell','Mcherry only','TG']
     def label_to_category(label): 
-        premotor=['premotor','trigeminal premotor','Premotor V','V premotor','Premotor','Trigeminal premotor']
+        premotor=['premotor','trigeminal premotor','Premotor V','V premotor','Premotor','Trigeminal premotor','TG']
         starter=['starter','Starter','Starter cell']
         Mcherry=['Mcherry','Mcherry only']
         if label in starter:
@@ -114,7 +114,7 @@ def move_manual_cells():
         elif label in Mcherry:
             return 3 
     def get_structure_id_of_point(pointi):
-        trigeminal = ['trigeminal premotor','Trigeminal premotor']
+        trigeminal = ['trigeminal premotor','Trigeminal premotor','TG']
         str_5N_L = ['Premotor V','V premotor']
         if pointi.label in trigeminal:
             return 57
@@ -137,11 +137,11 @@ def move_manual_cells():
     for prepi in data.prep_ids.unique():
         prep_data = data[data.prep_ids==prepi]
         for structurei in prep_data.structure_id.unique():
-            structure_data = prep_data[data.structure_id==structurei]
+            structure_data = prep_data[prep_data.structure_id==structurei]
             for owner in structure_data.owner_id.unique():
-                owner_data = structure_data[data.owner_id==owner]
+                owner_data = structure_data[structure_data.owner_id==owner]
                 for labeli in owner_data.label.unique():
-                    print(prepi,structurei,owner,labeli)
+                    print(prepi,structurei,owner,labeli,len(owner_data))
                     label_data = owner_data[owner_data.label==labeli]
                     session = AnnotationSession(FK_prep_id = prepi,FK_parent=0,FK_annotator_id=owner,FK_structure_id = structurei,annotation_type = AnnotationType.MARKED_CELL)
                     controller.add_row(session)
@@ -215,6 +215,6 @@ def move_detected_cells():
     controller.session.commit()
 
 # move_manual_cells()
-move_polygons()
+move_detected_cells()
 
 print()
